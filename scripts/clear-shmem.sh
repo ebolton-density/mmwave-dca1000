@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # https://stackoverflow.com/questions/2143404/delete-all-system-v-shared-memory-and-semaphores-on-unix-like-systems
 set -e
 

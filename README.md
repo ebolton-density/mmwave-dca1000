@@ -1,15 +1,38 @@
 ## DCA1000
-https://www.ti.com/tool/DCA1000EVM
-https://www.ti.com/tool/MMWAVE-STUDIO
-https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/1085015/dca1000evm-dca1000-schematic-diagram
-https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/851374/dca1000evm-dca1000-fpga-hdl-source-code
+* https://www.ti.com/tool/DCA1000EVM
+* https://www.ti.com/tool/MMWAVE-STUDIO
+* https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/1085015/dca1000evm-dca1000-schematic-diagram
+* https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/851374/dca1000evm-dca1000-fpga-hdl-source-code
+
+### Update EEPROM
+1. Set SW2.5 to ON (allow SW config)
+2. Set SW2.6 to ON (load FPGA defaults for IP config)
+3. Use the following JSON config:
+```
+    "ethernetConfig": {
+        "DCA1000IPAddress": "192.168.33.180",
+        "DCA1000ConfigPort": 4096,
+        "DCA1000DataPort": 4098
+    },
+    "ethernetConfigUpdate": {
+        "systemIPAddress": "NEW_SYSTEM_IP",
+        "DCA1000IPAddress": "NEW_DCA_IP",
+        "DCA1000MACAddress": "12.34.56.78.90.12",
+        "DCA1000ConfigPort": 4096,
+        "DCA1000DataPort": 4098
+    }
+```
+4. Update the EEPROM config:
+```
+update-eeprom.sh <JSON_PATH>
+```
 
 ### Command Line Utils
-DCA1000EVM_CLI_Control - Software user guide
-fpga - configure the fpga using JSON values
-start_record - start recording raw data
-stop_record - stop recording raw data
-query_status - returns system status codes (pg 18)
+* DCA1000EVM_CLI_Control - Software user guide
+* fpga - configure the fpga using JSON values
+* start_record - start recording raw data
+* stop_record - stop recording raw data
+* query_status - returns system status codes (pg 18)
 
 ### Data Capture Steps
 1. Disable the SPI and RS232 ports on the DCA1000
@@ -40,12 +63,15 @@ lvdsStreamCfg -1 1 1 1
 
 4. Configure the DCA1000 FPGA
   From the mmwave-studio Release build dir:
-  `LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control fpga ../../juno-dca1000.json`
-  `LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control record ../../juno-dca1000.json`
-
+```
+  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control fpga ../../juno-dca1000.json
+  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control record ../../juno-dca1000.json
+```
 5. Start recording
   From the mmwave-studio Release build dir:
-  `LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control start_record ../../juno-dca1000.json`
+```
+  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control start_record ../../juno-dca1000.json
+```
 
 ### Notes
 * The DCA1000 can't drive NRST when connected to Juno.
@@ -66,19 +92,19 @@ cd rf-eval-firmware/scripts
 
 ### Suspending the FTDI
 1. Find the port number of the FTDI on the DCA1000
-  ```
-  ebolton@ebolton-XPS-15-9510:~/density/lab-594-mmwave-env/mmwave-studio/src/Release$ sudo dmesg | grep usb | grep Product
-  [ 3663.602983] usb 5-2.3.1.2: Product: Quad RS232-HS
-  [ 3663.902677] usb 5-2.3.1.4: New USB device found, idVendor=0451, idProduct=fd03, bcdDevice= 8.00
-  [ 3663.902687] usb 5-2.3.1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-  [ 3663.902691] usb 5-2.3.1.4: Product: AR-DevPack-EVM-012
-  [ 3684.087185] usb 5-2.3.1.2: New USB device found, idVendor=0403, idProduct=6011, bcdDevice= 8.00
-  [ 3684.087196] usb 5-2.3.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=0
-  ```
-  note the port number: 5-2.3.1.4 (this will be different on each machine)
+```
+ebolton@ebolton-XPS-15-9510:~/density/lab-594-mmwave-env/mmwave-studio/src/Release$ sudo dmesg | grep usb | grep Product
+[ 3663.602983] usb 5-2.3.1.2: Product: Quad RS232-HS
+[ 3663.902677] usb 5-2.3.1.4: New USB device found, idVendor=0451, idProduct=fd03, bcdDevice= 8.00
+[ 3663.902687] usb 5-2.3.1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 3663.902691] usb 5-2.3.1.4: Product: AR-DevPack-EVM-012
+[ 3684.087185] usb 5-2.3.1.2: New USB device found, idVendor=0403, idProduct=6011, bcdDevice= 8.00
+[ 3684.087196] usb 5-2.3.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+```
+note the port number: 5-2.3.1.4 (this will be different on each machine)
 
 2. Suspend the FTDI ports on the DCA1000
-  ```
-  cd src/Release
-  sudo ./suspend-ftdi-usb.sh <PORT_NUMBER> # 5-2.3.1.4 in the example
-  ```
+```
+cd src/Release
+sudo ./suspend-ftdi-usb.sh <PORT_NUMBER> # 5-2.3.1.4 in the example
+```

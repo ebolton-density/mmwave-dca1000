@@ -7,25 +7,25 @@
     "dataFormatMode": 1,
     "packetDelay_us": 25,
     "ethernetConfig": {
-        "DCA1000IPAddress": "192.168.33.180",
+        "DCA1000IPAddress": "192.168.50.180",
         "DCA1000ConfigPort": 4096,
         "DCA1000DataPort": 4098
     },
     "ethernetConfigUpdate": {
-        "systemIPAddress": "192.168.33.30",
-        "DCA1000IPAddress": "192.168.33.180",
+        "systemIPAddress": "192.168.50.209",
+        "DCA1000IPAddress": "192.168.50.180",
         "DCA1000MACAddress": "12.34.56.78.90.12",
         "DCA1000ConfigPort": 4096,
         "DCA1000DataPort": 4098
     },
     "captureConfig": {
-        "fileBasePath": "/tmp",
+        "fileBasePath": "/home/ebolton/density/lab-594-mmwave-env/mmwave-dca1000/data",
         "filePrefix": "juno-test",
         "maxRecFileSize_MB": 1024,
         "sequenceNumberEnable": 1,
         "captureStopMode": "duration",
         "bytesToCapture": 50000,
-        "durationToCapture_ms": 5000,
+        "durationToCapture_ms": 3600000,
         "framesToCapture": 10
     },
     "dataFormatConfig": {

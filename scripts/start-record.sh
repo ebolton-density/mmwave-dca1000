@@ -1,7 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
+CONFIG_FILE=$1
+
+export LD_LIBRARY_PATH=.
+export PATH=.:$PATH
+
 ./clear-shmem.sh
-LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control fpga ../../juno-dca1000.json
-LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control record ../../juno-dca1000.json
-LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control start_record ../../juno-dca1000.json
+DCA1000EVM_CLI_Control fpga $CONFIG_FILE
+DCA1000EVM_CLI_Control record $CONFIG_FILE
+DCA1000EVM_CLI_Control start_record $CONFIG_FILE # -q
