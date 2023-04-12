@@ -24,10 +24,10 @@ TARGET_CTRL = ./$(BUILD_DIR)/DCA1000EVM_CLI_Control
 TARGET_REC = ./$(BUILD_DIR)/DCA1000EVM_CLI_Record
 TARGET_DIR = mkdir -p $@
 
-all: $(MK_BUILD_DIR) $(TARGET_DLL) $(TARGET_CTRL) $(TARGET_REC) install
+all: $(BUILD_DIR) $(TARGET_DLL) $(TARGET_CTRL) $(TARGET_REC) install
 
-$(MK_BUILD_DIR):
-	@echo "Folder $(BUILD_DIR) not exists"
+$(BUILD_DIR):
+	@echo "Folder $(BUILD_DIR) does not exist"
 	$(TARGET_DIR)
 
 $(TARGET_DLL): $(SOURCES_DLL)
