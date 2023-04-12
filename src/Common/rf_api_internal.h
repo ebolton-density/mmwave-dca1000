@@ -74,9 +74,14 @@
     #include <string.h>
     #include <stdlib.h>
     #include <sys/stat.h>
-    #include  <sys/ipc.h>
-    #include  <sys/shm.h>
+    #include <sys/ipc.h>
+    #include <sys/shm.h>
     #include <unistd.h>
+
+    #include <iostream>
+    #include <iomanip>
+    #include <chrono>
+    #include <ctime>
 
     #define SOCKET_ERROR -1
 #endif

@@ -243,6 +243,27 @@ bool cUdpDataReceiver::getThreadStatus()
      return bThreadState;
 }
 
+std::string currentTime() {
+    using namespace std::chrono;
+
+    // Get the current time
+    system_clock::time_point now = system_clock::now();
+
+    // Get the time as a time_t object and the milliseconds
+    time_t current_time = system_clock::to_time_t(now);
+    auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
+
+    // Format the time as a string
+    char buffer[20];
+    std::strftime(buffer, sizeof(buffer), "%Y%m%d-%H%M%S", std::localtime(&current_time));
+
+    // Append the milliseconds
+    std::string formatted_time(buffer);
+    formatted_time += '-' + std::to_string(ms.count());
+
+    return formatted_time;
+}
+
 /** @fn void cUdpDataReceiver::setFileName(SINT8 s8Value1, SINT8 s8Value2)
  * @brief This function is to set  data file name for the record progress
  * @param [in] s8Value1 [SINT8] - Header value
@@ -285,6 +306,8 @@ bool cUdpDataReceiver::setFileName(SINT8 s8Value1, SINT8 s8Value2)
 
     strcpy(strFileName1, strRecordFilePath);
     strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
+    strcat(strFileName1, "_");
+    strcat(strFileName1, currentTime().c_str());
     strcat(strFileName1, REC_DATA_FILE_EXTENSION);
 
     pRecordDataFile = fopen(strFileName1, "wb+");
