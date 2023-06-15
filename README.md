@@ -4,6 +4,15 @@
 * https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/1085015/dca1000evm-dca1000-schematic-diagram
 * https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/851374/dca1000evm-dca1000-fpga-hdl-source-code
 
+
+### Command Line Utils
+* DCA1000EVM_CLI_Control
+  * fpga - configure the fpga using JSON values
+  * start_record - start recording raw data
+  * stop_record - stop recording raw data
+  * query_status - returns system status codes
+
+
 ### Update EEPROM
 1. Set SW2.5 to ON (allow SW config)
 2. Set SW2.6 to ON (load FPGA defaults for IP config)
@@ -27,68 +36,76 @@
 update-eeprom.sh <JSON_PATH>
 ```
 
-### Command Line Utils
-* DCA1000EVM_CLI_Control - Software user guide
-* fpga - configure the fpga using JSON values
-* start_record - start recording raw data
-* stop_record - stop recording raw data
-* query_status - returns system status codes (pg 18)
 
-### Data Capture Steps
-1. Disable the SPI and RS232 ports on the DCA1000
-```
-./disable.sh FPGA 1 # SPI
-./disable.sh FPGA 3 # RS232
-```
+### Data Capture
+1. Install this image on the OA: https://s3.amazonaws.com/density-linux-artifacts/release/15020-5bea592-HLAB-4-dca-control-oa-internal-ota.swu
 
-2. Flash the Juno image
-```
-sudo ./flash.sh FLASH ../../iwrflasher/firmware/xwr68xx_mmw_demo.bin
-```
-or
-```
-sudo ./flash.sh SRAM-SPI ../../iwrflasher/firmware/xwr68xx_mmw_demo.bin
-```
+2. Use `scp` to transfer both the mmwave firmware and chirp config to `/cache` (if needed).
 
-3. Set the LVDS config on the IWR68XX
-connect to the proc
+3. Shell into the OA and edit `/cache/density/config.json` to include the following config block:
 ```
-minicom -D /dev/ttyUSB2
+{
+    "algo": {
+        "deviceConfigName": "/cache/density/dca1000/juno_calibration_11.cfg",
+        "fwpath": "/cache/density/dca1000/juno-firmware-unsigned.bin"
+    },
+    "override": {
+      "lvdsStreamCfg": "-1 1 1 1"
+    }
+}
 ```
-You should see the mmwave CLI: `mmwDemo:/>`
-Set the LVDS config:
+Set the paths for `deviceConfigName` and `fwpath`.
+
+4. Reboot the OA and shell into it again.
+
+5. Verify that the firmware and chirp config have been installed correctly with:
 ```
-lvdsStreamCfg -1 1 1 1
+journalctl -u mmwave-app
 ```
 
-4. Configure the DCA1000 FPGA
-  From the mmwave-studio Release build dir:
+6. Shell into the chamber workstation:
 ```
-  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control fpga ../../juno-dca1000.json
-  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control record ../../juno-dca1000.json
-```
-5. Start recording
-  From the mmwave-studio Release build dir:
-```
-  LD_LIBRARY_PATH=. ./DCA1000EVM_CLI_Control start_record ../../juno-dca1000.json
+ssh -p 22 lab@192.168.11.61
 ```
 
-### Notes
-* The DCA1000 can't drive NRST when connected to Juno.
+7. Set the data capture config (use `./config/juno-dca1000-lab.json` as an example):
+```
+"ethernetConfig": {
+    "DCA1000IPAddress": "192.168.11.250",
+    "DCA1000ConfigPort": 4096,
+    "DCA1000DataPort": 4098
+},
+"captureConfig": {
+    "fileBasePath": "/home/lab/oa-data-capture/data",
+    "filePrefix": "juno-phase",
+    "maxRecFileSize_MB": 1024,
+    "sequenceNumberEnable": 1,
+    "captureStopMode": "duration",
+    "bytesToCapture": 50000,
+    "durationToCapture_ms": 30000,
+    "framesToCapture": 10
+}
+```
+* `DCA1000IPAddress` - IP address of the capture board (set in the EEPROM).
+* `fileBasePath` : location of the capture data.
+* `filePrefix` : prefix of captures files (they're appended with a timestamp).
+* `captureStopMode` : determines when the capture stops (can be one of four values):
+  * bytes
+  * frames
+  * duration
+  * infinite
 
-### Build RADAR eval firmware
-1. source env script for mmwave SDK
+8. Start the capture:
 ```
-cd ~/ti/mmwave_sdk_03_06_00_00-LTS/packages/scripts/unix
-source setenv.sh
+cd ./install
+./start-record.sh CONFIG_FILE.json
 ```
 
-2. build image
+9. To manually stop the capture:
 ```
-cd rf-eval-firmware/scripts
-./generateMetaImage.sh ../xwr68xx_rf_eval.bin 0x00000006 ../masterss/xwr68xx_masterss.bin ../radarss/xwr68xx_radarss.bin NULL
-./generateMetaImage.sh ../xwr68xx_rf_eval.bin 0x00000006 ../masterss/xwr68xx_masterss.bin ../radarss/xwr68xx_radarss.bin ../../../mmwave-firmware/oob-demo-makefile/xwr68xx_mmw_demo_dss.xe674
+./stop-record.sh
 ```
+
 
 ### Suspending the FTDI
 1. Find the port number of the FTDI on the DCA1000

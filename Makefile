@@ -1,5 +1,5 @@
 TARGET_CC = $(CROSS_COMPILE)g++
-CFLAGS_DLL  = -std=c++11 -w -shared 
+CFLAGS_DLL  = -std=c++11 -w -shared
 CFLAGS_EXE 	= -std=c++11 -Wall -DENABLE_DEBUG -static-libgcc -static-libstdc++
 INCFLAGS 	= -I src/Common/DCA1000_API/. -I src/Common/Json_Utils/dist/json/. -I src/Common/. -I src/Common/Validate_Utils/. -I src/Common/Osal_Utils/.
 
@@ -40,8 +40,8 @@ $(TARGET_REC): $(SOURCES_REC)
 .PHONY: install
 install:
 	$(INSTALL) -d $(DESTDIR)$(bindir)
-	$(INSTALL) $(BUILD_DIR)/* $(DESTDIR)$(bindir)
-	$(INSTALL) $(SCRIPT_DIR)/* $(DESTDIR)$(bindir)
+	$(INSTALL) $(BUILD_DIR)/* $(DESTDIR)
+	$(INSTALL) $(SCRIPT_DIR)/* $(DESTDIR)
 
 clean:
 	$(RM) $(TARGET_DLL) $(TARGET_CTRL) $(TARGET_REC)

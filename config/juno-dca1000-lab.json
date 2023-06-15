@@ -11,21 +11,14 @@
         "DCA1000ConfigPort": 4096,
         "DCA1000DataPort": 4098
     },
-    "ethernetConfigUpdate": {
-        "systemIPAddress": "192.168.11.252",
-        "DCA1000IPAddress": "192.168.11.250",
-        "DCA1000MACAddress": "12.34.56.78.90.12",
-        "DCA1000ConfigPort": 4096,
-        "DCA1000DataPort": 4098
-    },
     "captureConfig": {
-        "fileBasePath": "/tmp/data",
-        "filePrefix": "juno-test",
+        "fileBasePath": "/home/lab/oa-data-capture/data",
+        "filePrefix": "juno-phase",
         "maxRecFileSize_MB": 1024,
         "sequenceNumberEnable": 1,
         "captureStopMode": "duration",
         "bytesToCapture": 50000,
-        "durationToCapture_ms": 3600000,
+        "durationToCapture_ms": 30000,
         "framesToCapture": 10
     },
     "dataFormatConfig": {
