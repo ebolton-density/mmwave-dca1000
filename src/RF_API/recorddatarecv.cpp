@@ -500,6 +500,8 @@ bool cUdpDataReceiver::writeDataToFile(SINT8 *s8Buffer, UINT32 u32Size)
 
         strcpy(strFileName1, strRecordFilePath);
         strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
+        strcat(strFileName1, "_");
+        strcat(strFileName1, currentTime().c_str());
         strcat(strFileName1, REC_DATA_FILE_EXTENSION);
 
         pRecordDataFile = fopen (strFileName1, "wb+");
@@ -1063,6 +1065,8 @@ bool cUdpDataReceiver::writeDataToFile_Inline(SINT8 *s8Buffer, UINT32 u32Size)
 
             strcpy(strFileName1, strRecordFilePath);
             strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
+            strcat(strFileName1, "_");
+            strcat(strFileName1, currentTime().c_str());
             strcat(strFileName1, REC_DATA_FILE_EXTENSION);
 
             pRecordDataFile = fopen (strFileName1, "wb+");
