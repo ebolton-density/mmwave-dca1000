@@ -187,6 +187,9 @@ class cUdpDataReceiver
     
     #endif
 
+    std::string currentTime();
+    void setFileNameTimestamp();
+
 public:
     /** @fn cUdpDataReceiver(UINT8 u8DataTypeArg)
      * @brief This constructor function is to initialize the class member <!--

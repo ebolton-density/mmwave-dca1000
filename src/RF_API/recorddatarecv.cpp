@@ -60,6 +60,10 @@
 ///****************
 /// Includes
 ///****************
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <cstring>
 
 #include "recorddatarecv.h"
 
@@ -234,16 +238,7 @@ void cUdpDataReceiver::setThreadStop()
      }
 }
 
-/** @fn void cUdpDataReceiver::getThreadStatus()
- * @brief This function is to get data thread progress status
- * @return boolean value
- */
-bool cUdpDataReceiver::getThreadStatus()
-{
-     return bThreadState;
-}
-
-std::string currentTime() {
+std::string cUdpDataReceiver::currentTime() {
     using namespace std::chrono;
 
     // Get the current time
@@ -262,6 +257,26 @@ std::string currentTime() {
     formatted_time += '-' + std::to_string(ms.count());
 
     return formatted_time;
+}
+
+void cUdpDataReceiver::setFileNameTimestamp() {
+    std::ostringstream oss;
+    oss << std::setw(4) << std::setfill('0') << u32DataFileCount;
+
+    strcpy(strFileName1, strRecordFilePath);
+    strcat(strFileName1, oss.str().c_str());
+    strcat(strFileName1, "_");
+    strcat(strFileName1, currentTime().c_str());
+    strcat(strFileName1, REC_DATA_FILE_EXTENSION);
+}
+
+/** @fn void cUdpDataReceiver::getThreadStatus()
+ * @brief This function is to get data thread progress status
+ * @return boolean value
+ */
+bool cUdpDataReceiver::getThreadStatus()
+{
+     return bThreadState;
 }
 
 /** @fn void cUdpDataReceiver::setFileName(SINT8 s8Value1, SINT8 s8Value2)
@@ -304,11 +319,7 @@ bool cUdpDataReceiver::setFileName(SINT8 s8Value1, SINT8 s8Value2)
     }
     strRecordFilePath[strlen(strRecordFilePath)] = '\0';
 
-    strcpy(strFileName1, strRecordFilePath);
-    strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
-    strcat(strFileName1, "_");
-    strcat(strFileName1, currentTime().c_str());
-    strcat(strFileName1, REC_DATA_FILE_EXTENSION);
+    setFileNameTimestamp();
 
     pRecordDataFile = fopen(strFileName1, "wb+");
     if (NULL == pRecordDataFile)
@@ -498,11 +509,7 @@ bool cUdpDataReceiver::writeDataToFile(SINT8 *s8Buffer, UINT32 u32Size)
         fclose(pRecordDataFile);
         u32DataFileCount++;
 
-        strcpy(strFileName1, strRecordFilePath);
-        strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
-        strcat(strFileName1, "_");
-        strcat(strFileName1, currentTime().c_str());
-        strcat(strFileName1, REC_DATA_FILE_EXTENSION);
+        setFileNameTimestamp();
 
         pRecordDataFile = fopen (strFileName1, "wb+");
         if (NULL == pRecordDataFile)
@@ -1063,11 +1070,7 @@ bool cUdpDataReceiver::writeDataToFile_Inline(SINT8 *s8Buffer, UINT32 u32Size)
             fclose(pRecordDataFile);
             u32DataFileCount ++;
 
-            strcpy(strFileName1, strRecordFilePath);
-            strcat(strFileName1, std::to_string(u32DataFileCount).c_str());
-            strcat(strFileName1, "_");
-            strcat(strFileName1, currentTime().c_str());
-            strcat(strFileName1, REC_DATA_FILE_EXTENSION);
+            setFileNameTimestamp();
 
             pRecordDataFile = fopen (strFileName1, "wb+");
             if (NULL == pRecordDataFile)
